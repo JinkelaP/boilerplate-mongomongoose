@@ -96,23 +96,53 @@ const findEditThenSave = (personId, done) => {
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
 
-  done(null /*, data*/);
+  Person.findOneAndUpdate(
+    { name: personName }, // 查询条件
+    { $set: { age: ageToSet } }, // 更新操作
+    { new: true }, // 选项，确保返回更新后的文档
+    (err, updatedDoc) => {
+      if (err) {
+        done(err);
+      } else {
+        done(null, updatedDoc);
+      }
+    }
+  );
 };
 
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findOneAndRemove({_id: personId},(err, updatedDoc) => {
+    if (err) {
+      done(err);
+    } else {
+      done(null, updatedDoc);
+    }
+  } )
 };
 
 const removeManyPeople = (done) => {
-  const nameToRemove = "Mary";
-
-  done(null /*, data*/);
+  let nameToRemove = 'Mary'
+  Person.remove({name: nameToRemove}, (err, response) => {
+    if (err) {
+      return err;
+    } else {
+      done(null, response);
+    }
+  })
 };
 
 const queryChain = (done) => {
   const foodToSearch = "burrito";
 
-  done(null /*, data*/);
+  let findQuery = Person.find({favoriteFoods: foodToSearch}).sort({ name: 1 }).limit(2).select({ age: 0 });
+  findQuery.exec((err, response) => {
+    if (err) {
+      return done(err);
+    } else {
+      done(null, response);
+    }
+  })
+
 };
 
 /** **Well Done !!**
